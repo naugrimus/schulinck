@@ -1,0 +1,38 @@
+# config/packages/workflow.yaml
+framework:
+    workflows:
+        order_states:
+            type: 'workflow' # or 'state_machine'
+            audit_trail:
+                enabled: true
+            marking_store:
+                type: 'method'
+                property: 'currentState'
+            supports:
+                - App\Entity\Order
+            initial_marking: draft
+            places:          # defining places manually is optional
+                - order_placed
+                - pizza_prepared
+                - pizza_in_oven
+                - delivery_in_progress
+                - delivered
+            transitions:
+                to_prepare:
+                    from: order_placed
+                    to: pizza_prepared
+                to_oven:
+                    from: pizza_prepared
+                    to:   pizza_in_oven
+                pickup:
+                    from: pizza_in_oven
+                    to: pickup
+                picked_up:
+                    from: pickup
+                    to: picked_up
+                delivery:
+                    from: pizza_in_oven
+                    to:   delivery_in_process
+                delivered:
+                    from: delivery_in_process
+                    to: delivered

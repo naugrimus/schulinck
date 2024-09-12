@@ -1,0 +1,9 @@
+index:
+    path: /{customer?}
+    controller: App\Controller\OrderController::index
+
+
+
+admin:
+    path: /admin
+    controller: App\Controller\Admin\OrderController::index

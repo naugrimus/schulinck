@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!DOCTYPE html>
+    <html lang="nl">
+    <head>
+        <meta charset="utf-8">
+        <title>Pizza bestelling</title>
+        <style>
+            html {
+                padding: 1em;
+                font-family: Arial, serif;
+                color: #333;
+            }
+
+            h1 {
+                margin-bottom: .1em;
+            }
+
+            table {
+                border-collapse: collapse;
+                margin-bottom: 300px;
+            }
+
+            th {
+                text-align: left;
+            }
+
+            td {
+                width: 300px;
+                text-align: left;
+                border: 1px solid #333;
+            }
+        </style>
+    </head>
+    <body>
+    {{ form_start(form) }}
+    <div>
+
+        <h1>1. Pizza keuze</h1>
+        <hr />
+
+        {{ form_widget(form._token) }}
+        {{ form_errors(form) }}
+        {{ form_row(form.pizzeria) }}
+        {{ form_row(form.pizzabottom) }}
+        {{ form_row(form.topping) }}
+
+
+    </div>
+    <div>
+
+        <h1>2. Uw gegevens</h1>
+        <hr />
+
+
+        {{ form_row(form.customer.name) }}
+        {{ form_row(form.customer.email) }}
+        {{ form_row(form.customer.telephone) }}
+
+
+    </div>
+    {{ form_row(form.save, { 'label': 'Plaats bestelling' }) }}
+    {{ form_end(form) }}
+
+
+    <h1>2. Bestellingen</h1>
+    <hr />
+    <table>
+        <thead>
+        <tr>
+            <th>Pizzeria</th>
+            <th>Pizza</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        </tbody>
+    </table>
+    </body>
+    </html>
+
+{% endblock %}
