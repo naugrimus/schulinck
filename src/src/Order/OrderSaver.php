@@ -8,8 +8,9 @@ namespace App\Order;
 use App\Customer\CustomerProvider;
 use App\Entity\Order;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Customer;
+use NotificationProviderInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
+use App\Factories\NotificationFactory;
 
 class OrderSaver
 {
@@ -18,37 +19,41 @@ class OrderSaver
     protected CustomerProvider $customerProvider;
 
     protected WorkflowInterface $workflow;
-    public function __construct(EntityManagerInterface $em, CustomerProvider $customerProvider, WorkflowInterface $orderStates) {
+
+    protected NotificationFactory $factory;
+
+    protected NotificationProviderInterface $provider;
+    public function __construct(EntityManagerInterface $em, WorkflowInterface $orderStates, NotificationFactory $factory) {
         $this->em = $em;
-        $this->customerProvider = $customerProvider;
         $this->workflow = $orderStates;
+        $this->factory = $factory;
     }
 
     public function save(?Order $order = null) {
         // save the entity
-        if($order['customerId']) {
-            /** @var  Customer $customer */
-            $customer = $this->customerProvider->fetch($order['customerId']);
-        } else {
-            $customer = new Customer();
-        }
-
        $this->em->persist($order);
        $this->em->flush();
+        $this->provider = $this->factory->create($order->getCustomer()->getPreferredNotification());
+       // the workflow should be triggered
+
 
     }
 
     public function toPrepare(Order $order): void
     {
         $this->workflow->apply($order, 'to_prepare');
+        $this->provider->send('Your order is prepared');
+
     }
 
     public function toOven(Order $order) {
         $this->workflow->apply($order, 'to_oven');
+        $this->provider->send('Is going to the oven');
     }
 
     public function delivery(Order $order) {
         $this->workflow->apply($order, 'delivery_in_progress');
+        $this->provider->send('Is going to be delivered');
     }
 
     public function delivered(Order $order) {
